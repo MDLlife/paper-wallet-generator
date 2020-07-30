@@ -80,7 +80,7 @@
                            width="20px"/>
                     </td>
                     <td class="text-left">
-              <span class="barley-white">
+              <span class="barley-white" id="pub-addr">
                 {{address.publicAddress}}
               </span>
                     </td>
@@ -93,7 +93,7 @@
                            width="20px"/>
                     </td>
                     <td class="text-left">
-                      <span class="barley-white">{{address.privateWif}}</span>
+                      <span class="barley-white" id="seed">{{address.privateWif}}</span>
                     </td>
                   </tr>
                   <tr v-if="address.keyHex && coins[currentCoin].generator !== 'btcGenerator'">
@@ -278,7 +278,6 @@
     -->
   </div>
 </template>
-
 <script>
 import CoinKey from 'coinkey'
 import cryptoRandomString from 'crypto-random-string'
@@ -296,6 +295,13 @@ import * as liskCrypto from '@liskhq/lisk-cryptography'
 
 import {openUrl} from 'src/util/url'
 import {Login} from "bitsharesjs"
+
+function generateSkyAddress() {
+	const go = new Go();
+	WebAssembly.instantiateStreaming(fetch("sky.wasm"), go.importObject).then((result) => {
+		go.run(result.instance);
+	});
+}
 
 export default {
     name: 'Generator',
@@ -321,6 +327,22 @@ export default {
             },
             copied: null,
             coins: {
+                "mdl": {
+                    title: "MDL",
+                    logo: "static/coins/mdl.png",
+                    public: 0x1,
+                    private: 0xff,
+                    generator: 'skyGenerator',
+                    downloadWallet: 'https://github.com/MDLlife/MDL/releases',
+                },
+                "sky": {
+                    title: "Skycoin",
+                    logo: "static/coins/sky.png",
+                    public: 0x0,
+                    private: 0xff,
+                    generator: 'skyGenerator',
+                    downloadWallet: 'https://github.com/SkycoinProject/Skycoin/releases',
+                },
                 "sth": {
                     title: "SmartHoldem",
                     logo: "static/coins/sth.png",
@@ -767,6 +789,15 @@ export default {
 
             if (this.coins[this.currentCoin].generator === 'btsGenerator') {
                 await this.BitsharesGenerator();
+            }
+
+            if (this.coins[this.currentCoin].generator === 'skyGenerator') {
+                this.address.privateWif = " "
+                this.address.publicAddress = " "
+                await generateSkyAddress();
+
+                this.address.privateWif = document.getElementById("seed").innerHTML
+                this.address.publicAddress = document.getElementById("pub-addr").innerHTML
             }
 
             this.onProcess = false;
