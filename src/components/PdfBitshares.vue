@@ -6,7 +6,6 @@
 
 <script>
   import jsPDF from 'jspdf'
-  import image2base64 from 'image-to-base64'
 
   export default {
     name: "PdfBitshares",
@@ -21,7 +20,8 @@
           //format: [900, 510]
         });
 
-        const coinLogo = 'data:image/png;base64,' + (await image2base64('static/coins/bts.png'));
+        const coinLogo = new Image();
+        coinLogo.src = 'static/coins/bts.png';
         doc.addImage(coinLogo, 'PNG', 9, 7, 15, 15);
 
         doc.setFontSize(35);
@@ -113,10 +113,12 @@
         doc.textWithLink('XBTS DEX', 12, 290, {url: 'https://ex.xbts.io'});
         doc.textWithLink('GitHub', 50, 290, {url: 'https://github.com/technologiespro/paper-wallet-generator/releases'});
 
-        const paperWalletLogo = 'data:image/png;base64,' + (await image2base64('static/logo/logo64.png'));
+        const paperWalletLogo = new Image();
+        paperWalletLogo.src = 'static/logo/logo64.png';
         doc.addImage(paperWalletLogo, 'PNG', 181, 280, 10, 10);
 
-        const xbtsLogo = 'data:image/png;base64,' + (await image2base64('static/logo/xbts.png'));
+        const xbtsLogo = new Image();
+        xbtsLogo.src = 'static/logo/xbts.png';
         doc.addImage(xbtsLogo, 'PNG', 150, 280, 25, 10);
 
         doc.save('PaperWallet-' + this.coin.title + '.pdf');

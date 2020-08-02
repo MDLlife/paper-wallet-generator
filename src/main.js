@@ -8,7 +8,6 @@ import eventBus from '@/plugins/event-bus'
 
 import 'bootstrap/dist/css/bootstrap.css';
 import '@/css/styles.css';
-import VueWasm from 'vue-wasm';
 
 Vue.use(VueDarkMode);
 Vue.use(Clipboard);

@@ -5,6 +5,7 @@ import Home from './views/Home.vue'
 Vue.use(Router)
 
 export default new Router({
+  mode: process.env.IS_ELECTRON ? 'hash' : 'history',
   routes: [
     {
       path: '/',

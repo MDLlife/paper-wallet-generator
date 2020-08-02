@@ -44,10 +44,12 @@
       <dm-button @click="generateAddress" color="black" size="large">Generate new {{coins[currentCoin].title}}
         account
       </dm-button>
-      <PdfBitshares :coin="coins[currentCoin]" v-if="coins.bts.account.name && !mobile"/>
-      <DownloadPdf :address="address" :coin="coins[currentCoin]" v-if="address.publicAddress && !mobile"/>
+      <br/>
+      <br/>
+      <PdfBitshares :coin="coins[currentCoin]" v-if="coins.bts.account.name"/>
+      <DownloadPdf :address="address" :coin="coins[currentCoin]" v-if="address.publicAddress"/>
       <DownloadTxt :address="address" :coin="coins[currentCoin]" methodOut="download"
-                   v-if="address.publicAddress && !mobile"/>
+                   v-if="address.publicAddress"/>
       <!--<DownloadPdf v-if="address.publicAddress && !mobile" :address="address" :coin="coins[currentCoin]" methodOut="print"/>-->
 
       <div class="container mt-4">
@@ -57,7 +59,7 @@
 
               <div class="col-md-5">
 
-                <div class="qr-container">
+                <div class="qr-container" v-if="!address.publicAddress.includes('Calculating')">
                   <VueQrcode :options="{size:138, foreground: '#232D3D',level: 'H'}" :value="address.publicAddress"
                              id="qrPub"/>
                   <p class="text-white-50">Public Address</p>
@@ -792,12 +794,29 @@ export default {
             }
 
             if (this.coins[this.currentCoin].generator === 'skyGenerator') {
-                this.address.privateWif = " "
-                this.address.publicAddress = " "
-                await generateSkyAddress();
+                const privateKeyHex = cryptoRandomString({length: 32})
+                const mnemonic = entropyToMnemonic(privateKeyHex)
+                this.address.privateWif = mnemonic;
+                this.address.publicAddress = "Calculating...";
+                generateSkyAddress();
 
-                this.address.privateWif = document.getElementById("seed").innerHTML
-                this.address.publicAddress = document.getElementById("pub-addr").innerHTML
+                const updatePubAddrQr = function(addr) {
+                  const pubAddr = document.getElementById("pub-addr").innerHTML;
+                  //console.log("updatePubAddrQr, addr = " + addr.publicAddress + ", publicAddress = " + pubAddr)
+                  if (pubAddr.includes("Calculating")) {
+                    setTimeout(() => { updatePubAddrQr(addr) }, 100)
+                  } else {
+                    addr.publicAddress = pubAddr
+                  }
+                }
+
+                setTimeout(()=>{
+                  updatePubAddrQr(this.address)
+                }, 100);
+                //this.address.publicAddress = global.getSkyPublicAddr(mnemonic);
+                //this.address.privateWif = document.getElementById("seed").innerHTML.toString();
+                //this.address.publicAddress = document.getElementById("pub-addr").innerHTML.toString();
+
             }
 
             this.onProcess = false;
