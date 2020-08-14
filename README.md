@@ -7,6 +7,8 @@ Designed to securely generate altcoins addresses offline
 ### Available Coins
 
 - 42-Coin (42) https://42-coin.org
+- Skycoin (SKY) https://skycoin.com
+- MDL Talent Hub (MDL) https://mdl.life
 - Ark (ARK) https://ark.io
 - Bitcoin (BTC) https://bitcoin.org
 - Bitshares (BTS) https://bitshares.org
